@@ -80,7 +80,7 @@ def test_classifier(test_set, classifier, target):
 		else:
 			error +=1
 
-	print "Test effectues : %s/%s erreurs soit %s pourcent" % (error, success+error, error*100.0/(success+error) )
+	#print "Test effectues : %s/%s erreurs soit %s pourcent" % (error, success+error, error*100.0/(success+error) )
 	return error, success
 
 print "Test des fonctions precedentes :"
@@ -117,8 +117,60 @@ for target  in range(10):
 	
 
 
-print "Classifier obtenu : "
-print classifier[:10]
+#
+#  3. Courbe d'apprentissage
+#
 
+
+
+
+print "3.9 Courbe d'ordre d'apprentissage"
+
+for train_size, color in [ (100, 'r') , (1000, 'b'), (5000, 'g'), (10000, 'c')]:
+	print train_size
+	values_x = []
+	values_y = []
+	values_error = []
+	trained_target = 6 
+	
+	random.shuffle(train_order)
+	classifier = np.zeros((784))
+
+	plot_train_set = [
+		train_set[0][:train_size],
+		train_set[1][:train_size]
+	]
+
+	plot_test_set = [
+		test_set[0][:train_size],
+		test_set[1][:train_size]
+	]
+
+	for e in range(1, 25):
+		train_order = range(train_size)
+		classifier, updates = train_epoch(
+			plot_train_set,
+			trained_target,
+			train_order,
+			classifier)
+
+		values_x.append(e)
+		values_y.append(updates)
+
+		errors, success = test_classifier(
+			plot_test_set,
+			classifier,
+			trained_target
+			)
+		values_error.append(errors)
+
+		plt.subplot(211)
+		plt.plot(values_x, values_y, color+'-')
+		plt.subplot(212)
+		plt.plot(values_x, values_error, color+'--')
+	print values_error
+
+
+plt.show()
 
 
